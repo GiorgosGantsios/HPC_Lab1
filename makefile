@@ -5,7 +5,7 @@
 EXECUTABLES	= sobel_orig
 
 #This is the compiler to use
-CC = icx
+CC = gcc
 
 #These are the flags passed to the compiler. Change accordingly
 CFLAGS = -Wall -O0
@@ -33,36 +33,31 @@ image: output_sobel.grey
 	convert -depth 8 -size 4096x4096 GRAY:output_sobel.grey output_sobel.jpg 
 
 # New rule to run the executable 12 times and capture time and PSNR
+# make run_experiment prefix=test
 run_experiment: $(EXECUTABLES)
 	@if [ -z "$(prefix)" ]; then \
-		echo "Error: Please provide a 'prefix' argument for the log files."; \
+		echo "Error: Please provide a 'prefix' argument for the CSV files."; \
 		exit 1; \
 	fi
-	@rm -f $(prefix)_run.log # Clean up previous run logs
-	@echo "Total time       | PSNR" > $(prefix)_run.log
-	@echo "-------------------------" >> $(prefix)_run.log
+	@rm -f $(prefix)_run.csv # Clean up previous run CSVs
+	@echo "Total time,PSNR" > $(prefix)_run.csv # CSV header
 	@total_time_sum=0; total_time_sq_sum=0; count=0; \
 	for i in `seq 1 12`; do \
 		output=$$(./sobel_orig); \
 		time=$$(echo "$$output" | grep "Total time" | awk '{print $$4}'); \
-		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$7}'); \
+		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$9}'); \
 		if [ -n "$$time" ]; then \
-			echo "$$time       | $$psnr" >> $(prefix)_run.log; \
-			total_time_sum=$$(echo "$$total_time_sum + $$time" | bc); \
-			total_time_sq_sum=$$(echo "$$total_time_sq_sum + ($$time * $$time)" | bc); \
-			count=$$((count + 1)); \
+			echo "$$time,$$psnr" >> $(prefix)_run.csv; \
 		else \
-			echo "Error: could not extract time for execution $$i" >> $(prefix)_run.log; \
+			echo "Error: could not extract time for execution $$i" >> $(prefix)_run.csv; \
 		fi; \
 	done; \
-	if [ $$count -gt 0 ]; then \
-		mean_time=$$(echo "scale=6; $$total_time_sum / $$count" | bc); \
-		std_time=$$(echo "scale=6; sqrt(($$total_time_sq_sum / $$count) - ($$mean_time * $$mean_time))" | bc); \
-		echo "-------------------------" >> $(prefix)_run.log; \
-		echo "Mean time: $$mean_time" >> $(prefix)_run.log; \
-		echo "Std time: $$std_time" >> $(prefix)_run.log; \
-	else \
-		echo "Error: no valid executions found" >> $(prefix)_run.log; \
-	fi
-	@echo "Run completed. Results saved in $(prefix)_run.log"
+	@echo "Run completed. Results saved in $(prefix)_run.csv"
 
+# make stats prefix=test
+stats:
+	@if [ -z "$(prefix)" ]; then \
+		echo "Error: Please provide a 'prefix' argument for the CSV files."; \
+		exit 1; \
+	fi
+	python3 calculate_stats.py $(prefix)
