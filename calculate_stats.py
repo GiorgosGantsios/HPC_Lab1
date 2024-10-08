@@ -26,7 +26,7 @@ def calculate_statistics(filename):
     return np.mean(trimmed_times), np.std(trimmed_times)
 
 def main(log_prefix):
-    log_filename = f"{log_prefix}_run.csv"
+    log_filename = f"{log_prefix}.csv"
     try:
         mean_time, std_dev_time = calculate_statistics(log_filename)
         print(f"Mean time: {mean_time:.6f}")

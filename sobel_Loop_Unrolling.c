@@ -120,8 +120,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p = pow(convolution2D(i+1, ++j+1, input, horiz_operator), 2) + 
-				pow(convolution2D(i+1, ++j+1, input, vert_operator), 2);
+			p = pow(convolution2D(i+1, j+1, input, horiz_operator), 2) + 
+				pow(convolution2D(i+1, j+1, input, vert_operator), 2);
 			res = (int)sqrt(p);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */

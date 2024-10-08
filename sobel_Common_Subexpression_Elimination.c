@@ -58,6 +58,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 {
 	double PSNR = 0, t;
 	int i, j;
+	//int look[SIZE][SIZE];
 	unsigned int p;
 	int res;
 	struct timespec  tv1, tv2;
@@ -106,6 +107,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* For each pixel of the output image */
 	for (i=1; i<SIZE-1; i+=1 ) {
 		for (j=1; j<SIZE-1; j+=1) {
+			//look[i][j] = i*SIZE + j;
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 
