@@ -39,28 +39,38 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 inline int convolution2D_hor(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res, a;
+	int i, j, res, a, temp;
   
 	res = 0;
 	a = ((posy-2)<<12) + posx;
 	for (i = -1; i <= 1; i++) {
 		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			res += (!j)? 0 :input[a + j] * operator[i+1][j+1];
+			temp = 	(!j)? 0 :
+					(i) ? input[a + j] : input[a + j] << 1;//* operator[i+1][j+1];
+			if (j!=-1)
+				res += temp;
+			else
+				res-= temp;
 		}
 	}
 	return(res);
 }
 
 inline int convolution2D_vert(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res, a;
+	int i, j, res, a, temp;
   
 	res = 0;
 	a = ((posy-2)<<12) + posx;
 	for (i = -1; i <= 1; i++) {
 		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			res += (!i)? 0 :input[a + j] * operator[i+1][j+1];
+			temp = 	(!i)? 0 :
+					(j) ? input[a + j] : input[a + j] << 1;//* operator[i+1][j+1];
+			if (i!=1)
+				res += temp;
+			else
+				res-= temp;
 		}
 	}
 	return(res);
