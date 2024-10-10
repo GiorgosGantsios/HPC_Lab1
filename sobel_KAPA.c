@@ -39,38 +39,28 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 inline int convolution2D_hor(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res, a, temp;
+	int i, j, res, a;
   
 	res = 0;
 	a = ((posy-2)<<12) + posx;
 	for (i = -1; i <= 1; i++) {
 		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			temp = 	(!j)? 0 :
-					(i) ? input[a + j] : input[a + j] << 1;//* operator[i+1][j+1];
-			if (j!=-1)
-				res += temp;
-			else
-				res-= temp;
+			res += (!j)? 0 :input[a + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
 }
 
 inline int convolution2D_vert(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res, a, temp;
+	int i, j, res, a;
   
 	res = 0;
 	a = ((posy-2)<<12) + posx;
 	for (i = -1; i <= 1; i++) {
 		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			temp = 	(!i)? 0 :
-					(j) ? input[a + j] : input[a + j] << 1;//* operator[i+1][j+1];
-			if (i!=1)
-				res += temp;
-			else
-				res-= temp;
+			res += (!i)? 0 :input[a + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
@@ -137,7 +127,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 		for (j=1; j<SIZE-1; j+=1) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p = convolution2D_hor(i, j, input, horiz_operator) * convolution2D_hor(i, j, input, horiz_operator) + convolution2D_vert(i, j, input, vert_operator) * convolution2D_vert(i, j, input, vert_operator); 
+			p = convolution2D_hor(i, j, input, horiz_operator) * convolution2D_hor(i, j, input, horiz_operator) + convolution2D_vert(i, j, input, vert_operator) * convolution2D_hor(i, j, input, vert_operator); 
 			res = (int)sqrt(p);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
