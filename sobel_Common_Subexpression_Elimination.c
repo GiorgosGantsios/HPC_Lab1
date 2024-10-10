@@ -41,8 +41,8 @@ int convolution2D(int posy, int posx, const unsigned char *input, char operator[
 	int i, j, res;
   
 	res = 0;
-	for (i = -1; i <= 1; i++) {
-		for (j = -1; j <= 1; j++) {
+	for (j = -1; j <= 1; j++) {
+		for (i = -1; i <= 1; i++) {
 			res += input[(posy + i)*SIZE + posx + j] * operator[i+1][j+1];
 		}
 	}
@@ -105,9 +105,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
 	/* For each pixel of the output image */
-	for (i=1; i<SIZE-1; i+=1 ) {
-		a += SIZE;
-		for (j=1; j<SIZE-1; j+=1) {
+	for (j=1; j<SIZE-1; j+=1) {
+		for (i=1; i<SIZE-1; i+=1 ) {
 			//look[i][j] = i*SIZE + j;
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
@@ -117,9 +116,9 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res > 255)
-				output[a + j] = 255;      
+				output[i*SIZE + j] = 255;      
 			else
-				output[a + j] = (unsigned char)res;
+				output[i*SIZE + j] = (unsigned char)res;
 		}
 	}
 
@@ -127,7 +126,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	 * the MSE and then the PSNR.									 */
 	 a = 0;
 	for (i=1; i<SIZE-1; i++) {
-		a += SIZE;
+		a = i * SIZE;
 		for ( j=1; j<SIZE-1; j++ ) {
 			t = pow((output[a+j] - golden[a+j]),2);
 			PSNR += t;

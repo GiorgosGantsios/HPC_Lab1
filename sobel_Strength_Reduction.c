@@ -41,9 +41,9 @@ int convolution2D(int posy, int posx, const unsigned char *input, char operator[
 	int i, j, res, mult = posy * SIZE, sum = -2 * SIZE;
   
 	res = 0;
-	for (i = -1; i <= 1; i++) {
+	for (j = -1; j <= 1; j++) {
 		sum += SIZE;
-		for (j = -1; j <= 1; j++) {
+		for (i = -1; i <= 1; i++) {
 			res += input[mult + sum + posx + j] * operator[i+1][j+1];
 		}
 	}
@@ -105,8 +105,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
 	/* For each pixel of the output image */
-	for (i=1; i<SIZE-1; i+=1 ) {
-		for (j=1; j<SIZE-1; j+=1) {
+	for (j=1; j<SIZE-1; j+=1) {
+		for (i=1; i<SIZE-1; i+=1 ) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 

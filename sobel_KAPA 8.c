@@ -41,8 +41,8 @@ int convolution2D(int posy, int posx, const unsigned char *input, char operator[
 	int i, j, res;
   
 	res = 0;
-	for (j = -1; j <= 1; j++) {
-		for (i = -1; i <= 1; i++) {
+	for (i = -1; i <= 1; i++) {
+		for (j = -1; j <= 1; j++) {
 			res += input[(posy + i)*SIZE + posx + j] * operator[i+1][j+1];
 		}
 	}
@@ -58,8 +58,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 {
 	double PSNR = 0, t;
 	int i, j;
-	unsigned int p, p1, p2, p3;
-	int res, res1, res2, res3;
+	unsigned int p, p1, p2, p3, p4, p5, p6, p7;
+	int res, res1, res2, res3, res4, res5, res6, res7;
 	struct timespec  tv1, tv2;
 	FILE *f_in, *f_out, *f_golden;
 
@@ -104,9 +104,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
 	/* For each pixel of the output image */
-	for (j=1; j<SIZE-3; j+=1) {
-		for (i=1; i<SIZE-1; i+=4 ) {
-			//printf("j: %d\n", j);
+	for (i=1; i<SIZE-1; i++) {
+		for ( j=1; j<SIZE-7; j+=8) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 
@@ -121,76 +120,165 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p1 = pow(convolution2D(i+1, j, input, horiz_operator), 2) + 
-				pow(convolution2D(i+1, j, input, vert_operator), 2);
+			p1 = pow(convolution2D(i, j+1, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+1, input, vert_operator), 2);
 			res1 = (int)sqrt(p1);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res1 > 255)
-				output[(i+1)*SIZE + j] = 255;      
+				output[i*SIZE + j+1] = 255;      
 			else
-				output[(i+1)*SIZE + j] = (unsigned char)res1;
+				output[i*SIZE + j+1] = (unsigned char)res1;
 
 						/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p2 = pow(convolution2D(i+2, j, input, horiz_operator), 2) + 
-				pow(convolution2D(i+2, j, input, vert_operator), 2);
+			p2 = pow(convolution2D(i, j+2, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+2, input, vert_operator), 2);
 			res2 = (int)sqrt(p2);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res2 > 255)
-				output[(i+2)*SIZE + (j)] = 255;      
+				output[i*SIZE + j+2] = 255;      
 			else
-				output[(i+2)*SIZE + (j)] = (unsigned char)res2;
+				output[i*SIZE + j+2] = (unsigned char)res2;
 
 						/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p3 = pow(convolution2D(i+3, j, input, horiz_operator), 2) + 
-				pow(convolution2D(i+3, j, input, vert_operator), 2);
+			p3 = pow(convolution2D(i, j+3, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+3, input, vert_operator), 2);
 			res3 = (int)sqrt(p3);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res3 > 255)
-				output[(i+3)*SIZE + (j)] = 255;      
+				output[i*SIZE + j+3] = 255;      
 			else
-				output[(i+3)*SIZE + (j)] = (unsigned char)res3;
+				output[i*SIZE + j+3] = (unsigned char)res3;
 
+						/* Apply the sobel filter and calculate the magnitude *
+			 * of the derivative.								  */
+			p4 = pow(convolution2D(i, j+4, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+4, input, vert_operator), 2);
+			res4 = (int)sqrt(p4);
+			/* If the resulting value is greater than 255, clip it *
+			 * to 255.											   */
+			if (res4 > 255)
+				output[i*SIZE + j+4] = 255;      
+			else
+				output[i*SIZE + j+4] = (unsigned char)res4;
+
+			/* Apply the sobel filter and calculate the magnitude *
+			 * of the derivative.								  */
+			p5 = pow(convolution2D(i, j+5, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+5, input, vert_operator), 2);
+			res5 = (int)sqrt(p5);
+			/* If the resulting value is greater than 255, clip it *
+			 * to 255.											   */
+			if (res5 > 255)
+				output[i*SIZE + j+5] = 255;      
+			else
+				output[i*SIZE + j+5] = (unsigned char)res5;
+
+						/* Apply the sobel filter and calculate the magnitude *
+			 * of the derivative.								  */
+			p6 = pow(convolution2D(i, j+6, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+6, input, vert_operator), 2);
+			res6 = (int)sqrt(p6);
+			/* If the resulting value is greater than 255, clip it *
+			 * to 255.											   */
+			if (res6 > 255)
+				output[i*SIZE + j+6] = 255;      
+			else
+				output[i*SIZE + j+6] = (unsigned char)res6;
+
+						/* Apply the sobel filter and calculate the magnitude *
+			 * of the derivative.								  */
+			p7 = pow(convolution2D(i, j+7, input, horiz_operator), 2) + 
+				pow(convolution2D(i, j+7, input, vert_operator), 2);
+			res7 = (int)sqrt(p7);
+			/* If the resulting value is greater than 255, clip it *
+			 * to 255.											   */
+			if (res7 > 255)
+				output[i*SIZE + j+7] = 255;      
+			else
+				output[i*SIZE + j+7] = (unsigned char)res7;
 		}
+		/* Apply the sobel filter and calculate the magnitude *
+		 * of the derivative.								  */
+		p2 = pow(convolution2D(i, 4089, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4089, input, vert_operator), 2);
+		res2 = (int)sqrt(p2);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res2 > 255)
+			output[i*SIZE + 4089] = 255;      
+		else
+			output[i*SIZE + 4089] = (unsigned char)res2;
 			/* Apply the sobel filter and calculate the magnitude *
-			 * of the derivative.								  */
-			p2 = pow(convolution2D(4093, j, input, horiz_operator), 2) + 
-				pow(convolution2D(4093, j, input, vert_operator), 2);
-			res2 = (int)sqrt(p2);
-			/* If the resulting value is greater than 255, clip it *
-			 * to 255.											   */
-			if (res2 > 255)
-				output[4093*SIZE + j] = 255;      
-			else
-				output[4093*SIZE + j] = (unsigned char)res2;
-
+		 * of the derivative.								  */
+		p3 = pow(convolution2D(i, 4090, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4090, input, vert_operator), 2);
+		res3 = (int)sqrt(p3);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res3 > 255)
+			output[i*SIZE + 4090] = 255;      
+		else
+			output[i*SIZE + 4090] = (unsigned char)res3;
+					/* Apply the sobel filter and calculate the magnitude *
+		 * of the derivative.								  */
+		p4 = pow(convolution2D(i, 4091, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4091, input, vert_operator), 2);
+		res4 = (int)sqrt(p4);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res4 > 255)
+			output[i*SIZE + 4091] = 255;      
+		else
+			output[i*SIZE + 4091] = (unsigned char)res4;
 			/* Apply the sobel filter and calculate the magnitude *
-			 * of the derivative.								  */
-			p3 = pow(convolution2D(4094, j, input, horiz_operator), 2) + 
-				pow(convolution2D(4094, j, input, vert_operator), 2);
-			res3 = (int)sqrt(p3);
-			/* If the resulting value is greater than 255, clip it *
-			 * to 255.											   */
-			if (res3 > 255)
-				output[4094*SIZE + j] = 255;      
-			else
-				output[4094*SIZE + j] = (unsigned char)res3;
+		 * of the derivative.								  */
+		p5 = pow(convolution2D(i, 4092, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4092, input, vert_operator), 2);
+		res5 = (int)sqrt(p5);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res5 > 255)
+			output[i*SIZE + 4092] = 255;      
+		else
+			output[i*SIZE + 4092] = (unsigned char)res5;
+					/* Apply the sobel filter and calculate the magnitude *
+		 * of the derivative.								  */
+		p6 = pow(convolution2D(i, 4093, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4093, input, vert_operator), 2);
+		res6 = (int)sqrt(p6);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res6 > 255)
+			output[i*SIZE + 4093] = 255;      
+		else
+			output[i*SIZE + 4093] = (unsigned char)res6;
+			/* Apply the sobel filter and calculate the magnitude *
+		 * of the derivative.								  */
+		p7 = pow(convolution2D(i, 4094, input, horiz_operator), 2) + 
+			pow(convolution2D(i, 4094, input, vert_operator), 2);
+		res7 = (int)sqrt(p7);
+		/* If the resulting value is greater than 255, clip it *
+		 * to 255.											   */
+		if (res7 > 255)
+			output[i*SIZE + 4094] = 255;      
+		else
+			output[i*SIZE + 4094] = (unsigned char)res7;
 	}
 
-	//printf("HALF!\n");
 	/* Now run through the output and the golden output to calculate *
 	 * the MSE and then the PSNR.									 */
 	for (i=1; i<SIZE-1; i++) {
-		for ( j=1; j<SIZE-1; j++ ) {
+		for ( j=1; j<SIZE-1; j++) {
 			t = pow((output[i*SIZE+j] - golden[i*SIZE+j]),2);
 			PSNR += t;
 		}
 	}
-  
+
 	PSNR /= (double)(SIZE*SIZE);
 	PSNR = 10*log10(65536/PSNR);
 

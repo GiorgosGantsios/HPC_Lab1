@@ -38,12 +38,12 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res, result;
+	int i = -1, j, res, result;
   
 	res = 0;
-	for (i = -1; i <= 1; i++) {
+	for (j = -1; j <= 1; j++) {
 		result = (posy + i)*SIZE + posx;
-		for (j = -1; j <= 1; j++) {
+		for (i = -1; i <= 1; i++) {
 			res += input[result + j] * operator[i+1][j+1];
 		}
 	}
@@ -105,8 +105,8 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
 	/* For each pixel of the output image */
-	for (i=1; i<SIZE-1; i+=1 ) {
-		for (j=1; j<SIZE-1; j+=1) {
+	for (j=1; j<SIZE-1; j+=1) {
+		for (i=1; i<SIZE-1; i+=1 ) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 
@@ -129,7 +129,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			PSNR += t;
 		}
 	}
-  
+
 	PSNR /= (double)(SIZE*SIZE);
 	PSNR = 10*log10(65536/PSNR);
 

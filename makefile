@@ -2,7 +2,7 @@
 # ARE NOT EQUIVALENT to tabs. The line after a rule starts with a tab!
 
 #Add any executable you want to be created here.
-EXECUTABLES	= sobel_orig sobel_Common_Subexpression_Elimination sobel_Function_Inlining sobel_Loop_Fusion sobel_Loop_Interchange sobel_Loop_Invariant_code_motion sobel_Loop_Unrolling sobel_Strength_Reduction
+EXECUTABLES	= sobel_orig sobel_Common_Subexpression_Elimination sobel_Function_Inlining sobel_Loop_Fusion sobel_Loop_Interchange sobel_Loop_Invariant_code_motion sobel_Loop_Unrolling sobel_Strength_Reduction sobel_KAPA
 
 #This is the compiler to use
 CC = icx
@@ -169,20 +169,20 @@ run_experiment: $(EXECUTABLES)
 	@echo "Run completed. Results saved in $(prefix)Strength_Reduction.csv"
 
 run_spec: $(EXECUTABLES)
-	@echo "Total time,PSNR" > $(prefix)Strength_Reduction.csv # CSV header
+	@echo "Total time,PSNR" > $(prefix)KAPA.csv # CSV header
 	@total_time_sum=0; total_time_sq_sum=0; count=0; \
 	for i in `seq 1 12`; do \
-		output=$$(./sobel_Strength_Reduction); \
+		output=$$(./sobel_KAPA); \
 		time=$$(echo "$$output" | grep "Total time" | awk '{print $$4}'); \
 		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$9}'); \
 		if [ -n "$$time" ]; then \
-			echo "$$time,$$psnr" >> $(prefix)Strength_Reduction.csv; \
+			echo "$$time,$$psnr" >> $(prefix)KAPA.csv; \
 		else \
-			echo "Error: could not extract time for execution $$i" >> $(prefix)Strength_Reduction.csv; \
+			echo "Error: could not extract time for execution $$i" >> $(prefix)KAPA.csv; \
 		fi; \
 	done; \
-	python3 calculate_stats.py $(prefix)Strength_Reduction
-	@echo "Run completed. Results saved in $(prefix)Strength_Reduction.csv"
+	python3 calculate_stats.py $(prefix)KAPA
+	@echo "Run completed. Results saved in $(prefix)KAPA.csv"
 # make stats prefix=test
 
 stats:
