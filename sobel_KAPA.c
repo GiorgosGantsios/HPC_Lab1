@@ -105,16 +105,35 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
   
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
-	int row_index, index, res1, res2;
+	int row_index, index, res1, res2, k, l, a;
 	/* For each pixel of the output image */
 	for (i=1; i<SIZE-1; i+=1 ) {
 		row_index = i<<12;
 		for (j=1; j<SIZE-1; j+=1) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
+			//int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
+  
+			res1 = 0;
+			a = ((i-2)<<12) + j;
+			for (k = -1; k <= 1; k++) {
+				a += SIZE;
+				for (l = -1; l <= 1; l++) {
+					res1 += input[a + l] * horiz_operator[k+1][l+1];
+				}
+			}
 
-			res1 = convolution2D(i, j, input, horiz_operator);
-			res2 = convolution2D(i, j, input, vert_operator);
+			res2 = 0;
+			a = ((i-2)<<12) + j;
+			for (k = -1; k <= 1; k++) {
+				a += SIZE;
+				for (l = -1; l <= 1; l++) {
+					res2 += input[a + l] * vert_operator[k+1][l+1];
+				}
+			}
+
+			/*res1 = convolution2D(i, j, input, horiz_operator);
+			res2 = convolution2D(i, j, input, vert_operator);*/
 			p = res1 * res1 + res2 * res2; 
 			res = (int)sqrt(p);
 			/* If the resulting value is greater than 255, clip it *
