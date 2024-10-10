@@ -38,12 +38,13 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res;
+	int i, j, res, mult = posy * SIZE, sum = -2 * SIZE;
   
 	res = 0;
 	for (i = -1; i <= 1; i++) {
+		sum += SIZE;
 		for (j = -1; j <= 1; j++) {
-			res += input[(posy + i)*SIZE + posx + j] * operator[i+1][j+1];
+			res += input[mult + sum + posx + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
@@ -57,8 +58,7 @@ int convolution2D(int posy, int posx, const unsigned char *input, char operator[
 double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 {
 	double PSNR = 0, t;
-	int i, j, a = 0;
-	//int look[SIZE][SIZE];
+	int i, j;
 	unsigned int p;
 	int res;
 	struct timespec  tv1, tv2;
@@ -106,9 +106,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
 	/* For each pixel of the output image */
 	for (i=1; i<SIZE-1; i+=1 ) {
-		a += SIZE;
 		for (j=1; j<SIZE-1; j+=1) {
-			//look[i][j] = i*SIZE + j;
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 
@@ -117,23 +115,21 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res > 255)
-				output[a + j] = 255;      
+				output[(i<<12) + j] = 255;      
 			else
-				output[a + j] = (unsigned char)res;
+				output[(i<<12) + j] = (unsigned char)res;
 		}
 	}
 
 	/* Now run through the output and the golden output to calculate *
 	 * the MSE and then the PSNR.									 */
-	 a = 0;
 	for (i=1; i<SIZE-1; i++) {
-		a += SIZE;
 		for ( j=1; j<SIZE-1; j++ ) {
-			t = pow((output[a+j] - golden[a+j]),2);
+			t = pow((output[(i<<12)+j] - golden[(i<<12)+j]),2);
 			PSNR += t;
 		}
 	}
-  
+
 	PSNR /= (double)(SIZE*SIZE);
 	PSNR = 10*log10(65536/PSNR);
 

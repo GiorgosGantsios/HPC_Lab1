@@ -38,12 +38,13 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res;
+	int i, j, res, result;
   
 	res = 0;
 	for (i = -1; i <= 1; i++) {
+		result = (posy + i)*SIZE + posx;
 		for (j = -1; j <= 1; j++) {
-			res += input[(posy + i)*SIZE + posx + j] * operator[i+1][j+1];
+			res += input[result + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
