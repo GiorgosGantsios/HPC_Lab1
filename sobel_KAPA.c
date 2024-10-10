@@ -21,7 +21,8 @@ char vert_operator[3][3] = {{1, 2, 1},
                             {-1, -2, -1}};
 
 double sobel(unsigned char *input, unsigned char *output, unsigned char *golden);
-int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]);
+int convolution2D_hor(int posy, int posx, const unsigned char *input, char operator[][3]);
+int convolution2D_vert(int posy, int posx, const unsigned char *input, char operator[][3]);
 
 /* The arrays holding the input image, the output image and the output used *
  * as golden standard. The luminosity (intensity) of each pixel in the      *
@@ -37,7 +38,7 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * operator the operator we apply (horizontal or vertical). The function ret. *
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
-inline int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
+inline int convolution2D_hor(int posy, int posx, const unsigned char *input, char operator[][3]) {
 	int i, j, res, a;
   
 	res = 0;
@@ -45,7 +46,21 @@ inline int convolution2D(int posy, int posx, const unsigned char *input, char op
 	for (i = -1; i <= 1; i++) {
 		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			res += input[a + j] * operator[i+1][j+1];
+			res += (!j)? 0 :input[a + j] * operator[i+1][j+1];
+		}
+	}
+	return(res);
+}
+
+inline int convolution2D_vert(int posy, int posx, const unsigned char *input, char operator[][3]) {
+	int i, j, res, a;
+  
+	res = 0;
+	a = ((posy-2)<<12) + posx;
+	for (i = -1; i <= 1; i++) {
+		a += SIZE;
+		for (j = -1; j <= 1; j++) {
+			res += (!i)? 0 :input[a + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
@@ -112,7 +127,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 		for (j=1; j<SIZE-1; j+=1) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
-			p = convolution2D(i, j, input, horiz_operator) * convolution2D(i, j, input, horiz_operator) + convolution2D(i, j, input, vert_operator) * convolution2D(i, j, input, vert_operator); 
+			p = convolution2D_hor(i, j, input, horiz_operator) * convolution2D_hor(i, j, input, horiz_operator) + convolution2D_vert(i, j, input, vert_operator) * convolution2D_vert(i, j, input, vert_operator); 
 			res = (int)sqrt(p);
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
