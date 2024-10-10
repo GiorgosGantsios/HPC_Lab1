@@ -5,7 +5,7 @@
 EXECUTABLES	= sobel_orig sobel_Common_Subexpression_Elimination sobel_Function_Inlining sobel_Loop_Fusion sobel_Loop_Interchange sobel_Loop_Invariant_code_motion sobel_Loop_Unrolling sobel_Strength_Reduction sobel_KAPA
 
 #This is the compiler to use
-CC = icx
+CC = gcc
 
 #These are the flags passed to the compiler. Change accordingly
 CFLAGS = -Wall -O0

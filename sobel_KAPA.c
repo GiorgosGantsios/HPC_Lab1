@@ -37,13 +37,15 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * operator the operator we apply (horizontal or vertical). The function ret. *
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
-int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i, j, res;
+inline int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
+	int i, j, res, a;
   
 	res = 0;
+	a = ((posy-2)<<12) + posx;
 	for (i = -1; i <= 1; i++) {
+		a += SIZE;
 		for (j = -1; j <= 1; j++) {
-			res += input[(posy + i)*SIZE + posx + j] * operator[i+1][j+1];
+			res += input[a + j] * operator[i+1][j+1];
 		}
 	}
 	return(res);
@@ -103,8 +105,10 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
   
 	/* This is the main computation. Get the starting time. */
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv1);
+	int row_index, index;
 	/* For each pixel of the output image */
 	for (i=1; i<SIZE-1; i+=1 ) {
+		row_index = i<<12;
 		for (j=1; j<SIZE-1; j+=1) {
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
@@ -113,22 +117,24 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res > 255)
-				output[i*SIZE + j] = 255;      
+				output[row_index + j] = 255;      
 			else
-				output[i*SIZE + j] = (unsigned char)res;
+				output[row_index + j] = (unsigned char)res;
 		}
 	}
 
 	/* Now run through the output and the golden output to calculate *
 	 * the MSE and then the PSNR.									 */
 	for (i=1; i<SIZE-1; i++) {
+		row_index = i<<12;
 		for ( j=1; j<SIZE-1; j++ ) {
-			t = pow((output[i*SIZE+j] - golden[i*SIZE+j]),2);
+			index = row_index+j;
+			t = (output[index] - golden[index]) * (output[index] - golden[index]);//pow((output[i*SIZE+j] - golden[i*SIZE+j]),2);
 			PSNR += t;
 		}
 	}
   
-	PSNR /= (double)(SIZE*SIZE);
+	PSNR /= (double)(SIZE<<12);
 	PSNR = 10*log10(65536/PSNR);
 
 	/* This is the end of the main computation. Take the end time,  *
