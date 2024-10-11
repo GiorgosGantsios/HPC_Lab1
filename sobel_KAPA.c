@@ -116,24 +116,35 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
   
 			res1 = 0;
 			a = ((i-2)<<12) + j;
-			for (k = -1; k <= 1; k++) {
-				a += SIZE;
-				for (l = -1; l <= 1; l++) {
-					res1 += input[a + l] * horiz_operator[k+1][l+1];
-				}
-			}
+			a += SIZE;
+			res1 += input[a + -1] * horiz_operator[0][0];
+			res1 += input[a] * horiz_operator[0][1];
+			res1 += input[a + 1] * horiz_operator[0][2];
+			a += SIZE;
+			res1 += input[a + -1] * horiz_operator[1][0];
+			res1 += input[a] * horiz_operator[1][1];
+			res1 += input[a + 1] * horiz_operator[1][2];
+			a += SIZE;
+			res1 += input[a + -1] * horiz_operator[2][0];
+			res1 += input[a] * horiz_operator[2][1];
+			res1 += input[a + 1] * horiz_operator[2][2];
 
 			res2 = 0;
-			a = ((i-2)<<12) + j;
-			for (k = -1; k <= 1; k++) {
-				a += SIZE;
-				for (l = -1; l <= 1; l++) {
-					res2 += input[a + l] * vert_operator[k+1][l+1];
-				}
-			}
+			a = ((i-2)<<12) + j;		
+	
+			a += SIZE;
+			res2 += input[a + -1] * vert_operator[0][0];
+			res2 += input[a] * vert_operator[0][1];
+			res2 += input[a + 1] * vert_operator[0][2];
+			a += SIZE;
+			res2 += input[a + -1] * vert_operator[1][0];
+			res2 += input[a] * vert_operator[1][1];
+			res2 += input[a + 1] * vert_operator[1][2];
+			a += SIZE;
+			res2 += input[a + -1] * vert_operator[2][0];
+			res2 += input[a] * vert_operator[2][1];
+			res2 += input[a + 1] * vert_operator[2][2];
 
-			/*res1 = convolution2D(i, j, input, horiz_operator);
-			res2 = convolution2D(i, j, input, vert_operator);*/
 			p = res1 * res1 + res2 * res2; 
 			res = (int)sqrt(p);
 			/* If the resulting value is greater than 255, clip it *
@@ -149,7 +160,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	 * the MSE and then the PSNR.									 */
 	for (i=1; i<SIZE-1; i++) {
 		row_index = i<<12;
-		for ( j=1; j<SIZE-1; j++ ) {
+		for ( j=1; j<SIZE-1; j++) {
 			index = row_index+j;
 			t = (output[index] - golden[index]) * (output[index] - golden[index]);//pow((output[i*SIZE+j] - golden[i*SIZE+j]),2);
 			PSNR += t;
