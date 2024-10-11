@@ -113,37 +113,38 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			//int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-  
+
+
 			res1 = 0;
 			a = ((i-2)<<12) + j;
 			a += SIZE;
-			res1 += input[a + -1] * horiz_operator[0][0];
-			res1 += input[a] * horiz_operator[0][1];
-			res1 += input[a + 1] * horiz_operator[0][2];
+			res1 -= input[a + -1];
+			//res1 += input[a] * 0;
+			res1 += input[a + 1];
 			a += SIZE;
-			res1 += input[a + -1] * horiz_operator[1][0];
-			res1 += input[a] * horiz_operator[1][1];
-			res1 += input[a + 1] * horiz_operator[1][2];
+			res1 -= ((input[a + -1]) << 1);
+			//res1 += input[a] * 0;
+			res1 += ((input[a + 1]) << 1);
 			a += SIZE;
-			res1 += input[a + -1] * horiz_operator[2][0];
-			res1 += input[a] * horiz_operator[2][1];
-			res1 += input[a + 1] * horiz_operator[2][2];
+			res1 -= input[a + -1];
+			//res1 += input[a] * 0;
+			res1 += input[a + 1];
 
 			res2 = 0;
 			a = ((i-2)<<12) + j;		
-	
+
 			a += SIZE;
-			res2 += input[a + -1] * vert_operator[0][0];
-			res2 += input[a] * vert_operator[0][1];
-			res2 += input[a + 1] * vert_operator[0][2];
+			res2 += input[a + -1];
+			res2 += ((input[a]) << 1);
+			res2 += input[a + 1];
 			a += SIZE;
-			res2 += input[a + -1] * vert_operator[1][0];
-			res2 += input[a] * vert_operator[1][1];
-			res2 += input[a + 1] * vert_operator[1][2];
+			/*res2 += input[a + -1] * 0;
+			res2 += input[a] * 0;
+			res2 += input[a + 1] * 0;*/
 			a += SIZE;
-			res2 += input[a + -1] * vert_operator[2][0];
-			res2 += input[a] * vert_operator[2][1];
-			res2 += input[a + 1] * vert_operator[2][2];
+			res2 -= input[a + -1];
+			res2 -= ((input[a]) << 1);
+			res2 -= input[a + 1];
 
 			p = res1 * res1 + res2 * res2; 
 			res = (int)sqrt(p);
