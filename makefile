@@ -2,13 +2,13 @@
 # ARE NOT EQUIVALENT to tabs. The line after a rule starts with a tab!
 
 #Add any executable you want to be created here.
-EXECUTABLES	= sobel_orig sobel_Common_Subexpression_Elimination sobel_Function_Inlining sobel_Loop_Fusion sobel_Loop_Interchange sobel_Loop_Invariant_code_motion sobel_Loop_Unrolling sobel_Strength_Reduction sobel_KAPA
+EXECUTABLES	= sobel_orig sobel_Common_Subexpression_Elimination sobel_Function_Inlining sobel_Loop_Fusion sobel_Loop_Interchange sobel_Loop_Invariant_code_motion sobel_Loop_Unrolling_2 sobel_Strength_Reduction sobel_KAPA
 
 #This is the compiler to use
 CC = icx
 
 #These are the flags passed to the compiler. Change accordingly
-CFLAGS = -Wall -O0
+CFLAGS = -Wall -fast
 
 #These are the flags passed to the linker. Nothing in our case
 LDFLAGS = -lm
@@ -73,20 +73,20 @@ run_experiment: $(EXECUTABLES)
 	@echo "Run completed. Results saved in $(prefix)loop_interchange.csv"
 #	################################################################################################
 # 	LOOP UNROLLING
-	@echo "Total time,PSNR" > $(prefix)Loop_Unrolling.csv # CSV header
+	@echo "Total time,PSNR" > $(prefix)Loop_Unrolling_2.csv # CSV header
 	@total_time_sum=0; total_time_sq_sum=0; count=0; \
 	for i in `seq 1 12`; do \
-		output=$$(./sobel_Loop_Unrolling); \
+		output=$$(./sobel_Loop_Unrolling_2); \
 		time=$$(echo "$$output" | grep "Total time" | awk '{print $$4}'); \
 		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$9}'); \
 		if [ -n "$$time" ]; then \
-			echo "$$time,$$psnr" >> $(prefix)Loop_Unrolling.csv; \
+			echo "$$time,$$psnr" >> $(prefix)Loop_Unrolling_2.csv; \
 		else \
-			echo "Error: could not extract time for execution $$i" >> $(prefix)Loop_Unrolling.csv; \
+			echo "Error: could not extract time for execution $$i" >> $(prefix)Loop_Unrolling_2.csv; \
 		fi; \
 	done; \
-	python3 calculate_stats.py $(prefix)Loop_Unrolling
-	@echo "Run completed. Results saved in $(prefix)Loop_Unrolling.csv"
+	python3 calculate_stats.py $(prefix)Loop_Unrolling_2
+	@echo "Run completed. Results saved in $(prefix)Loop_Unrolling_2.csv"
 #	################################################################################################
 #	LOOP FUSION
 	@echo "Total time,PSNR" > $(prefix)loop_fusion.csv # CSV header
@@ -121,20 +121,20 @@ run_experiment: $(EXECUTABLES)
 	@echo "Run completed. Results saved in $(prefix)function_inlining.csv"
 #	################################################################################################
 #	LOOP INVARIANT CODE MOTION
-	@echo "Total time,PSNR" > $(prefix)loop_Invvariant_code_motion.csv # CSV header
+	@echo "Total time,PSNR" > $(prefix)loop_Invariant_code_motion.csv # CSV header
 	@total_time_sum=0; total_time_sq_sum=0; count=0; \
 	for i in `seq 1 12`; do \
 		output=$$(./sobel_Loop_Invariant_code_motion); \
 		time=$$(echo "$$output" | grep "Total time" | awk '{print $$4}'); \
 		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$9}'); \
 		if [ -n "$$time" ]; then \
-			echo "$$time,$$psnr" >> $(prefix)loop_Invvariant_code_motion.csv; \
+			echo "$$time,$$psnr" >> $(prefix)loop_Invariant_code_motion.csv; \
 		else \
-			echo "Error: could not extract time for execution $$i" >> $(prefix)loop_Invvariant_code_motion.csv; \
+			echo "Error: could not extract time for execution $$i" >> $(prefix)loop_Invariant_code_motion.csv; \
 		fi; \
 	done; \
-	python3 calculate_stats.py $(prefix)loop_Invvariant_code_motion
-	@echo "Run completed. Results saved in $(prefix)loop_Invvariant_code_motion.csv"
+	python3 calculate_stats.py $(prefix)loop_Invariant_code_motion
+	@echo "Run completed. Results saved in $(prefix)loop_Invariant_code_motion.csv"
 #	################################################################################################
 #	COMMON SUBEXPRESSION ELIMINATION
 	@echo "Total time,PSNR" > $(prefix)common_subexpression_elimination.csv # CSV header
@@ -169,20 +169,20 @@ run_experiment: $(EXECUTABLES)
 	@echo "Run completed. Results saved in $(prefix)Strength_Reduction.csv"
 
 run_spec: $(EXECUTABLES)
-	@echo "Total time,PSNR" > $(prefix)KAPA.csv # CSV header
+	@echo "Total time,PSNR" > $(prefix)Strength_Reduction.csv # CSV header
 	@total_time_sum=0; total_time_sq_sum=0; count=0; \
 	for i in `seq 1 12`; do \
-		output=$$(./sobel_KAPA); \
+		output=$$(./sobel_Strength_Reduction); \
 		time=$$(echo "$$output" | grep "Total time" | awk '{print $$4}'); \
 		psnr=$$(echo "$$output" | grep "PSNR" | awk '{print $$9}'); \
 		if [ -n "$$time" ]; then \
-			echo "$$time,$$psnr" >> $(prefix)KAPA.csv; \
+			echo "$$time,$$psnr" >> $(prefix)Strength_Reduction.csv; \
 		else \
-			echo "Error: could not extract time for execution $$i" >> $(prefix)KAPA.csv; \
+			echo "Error: could not extract time for execution $$i" >> $(prefix)Strength_Reduction.csv; \
 		fi; \
 	done; \
-	python3 calculate_stats.py $(prefix)KAPA
-	@echo "Run completed. Results saved in $(prefix)KAPA.csv"
+	python3 calculate_stats.py $(prefix)Strength_Reduction
+	@echo "Run completed. Results saved in $(prefix)Strength_Reduction.csv"
 # make stats prefix=test
 
 stats:

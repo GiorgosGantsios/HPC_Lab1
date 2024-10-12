@@ -113,14 +113,14 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			 
 			
 			res1 = 0;
-			for (k = -1; k <= 1; k++) {
-				for (l = -1; l <= 1; l++) {
+			for (l = -1; l <= 1; l++) {
+				for (k = -1; k <= 1; k++) {
 					res1 += input[(i + k)*SIZE + j + l] * horiz_operator[k+1][l+1];
 				}
 			}
 			res2 = 0;
-			for (k = -1; k <= 1; k++) {
-				for (l = -1; l <= 1; l++) {
+			for (l = -1; l <= 1; l++) {
+				for (k = -1; k <= 1; k++) {
 					res2 += input[(i + k)*SIZE + j + l] * vert_operator[k+1][l+1];
 				}
 			}

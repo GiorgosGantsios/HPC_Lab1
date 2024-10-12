@@ -114,7 +114,6 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			 * of the derivative.								  */
 			//int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
 
-
 			res1 = 0;
 			a = ((i-2)<<12) + j;
 			a += SIZE;

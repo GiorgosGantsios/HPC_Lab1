@@ -29,6 +29,7 @@ int convolution2D(int posy, int posx, const unsigned char *input, char operator[
  * character). The arrays (and the files) contain these values in row-major *
  * order (element after element within each row and row after row. 			*/
 unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
+int look[SIZE][SIZE];
 
 
 /* Implement a 2D convolution of the matrix with the operator */
@@ -38,13 +39,14 @@ unsigned char input[SIZE*SIZE], output[SIZE*SIZE], golden[SIZE*SIZE];
  * value is the convolution of the operator with the neighboring pixels of the*
  * pixel we process.														  */
 int convolution2D(int posy, int posx, const unsigned char *input, char operator[][3]) {
-	int i = -1, j, res, result;
-  
+	int i = -1, j, res, result, fResult;
+
 	res = 0;
+	result = posy*SIZE + posx;
 	for (j = -1; j <= 1; j++) {
-		result = (posy + i)*SIZE + posx;
+		fResult = result + j;
 		for (i = -1; i <= 1; i++) {
-			res += input[result + j] * operator[i+1][j+1];
+			res += input[fResult + SIZE*i] * operator[i+1][j+1];
 		}
 	}
 	return(res);
@@ -107,6 +109,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	/* For each pixel of the output image */
 	for (j=1; j<SIZE-1; j+=1) {
 		for (i=1; i<SIZE-1; i+=1 ) {
+			look[j][i] = i*SIZE + j;
 			/* Apply the sobel filter and calculate the magnitude *
 			 * of the derivative.								  */
 			p = pow(convolution2D(i, j, input, horiz_operator), 2) + 
@@ -115,9 +118,9 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 			/* If the resulting value is greater than 255, clip it *
 			 * to 255.											   */
 			if (res > 255)
-				output[i*SIZE + j] = 255;      
+				output[look[j][i]] = 255;      
 			else
-				output[i*SIZE + j] = (unsigned char)res;
+				output[look[j][i]] = (unsigned char)res;
 		}
 	}
 
@@ -125,7 +128,7 @@ double sobel(unsigned char *input, unsigned char *output, unsigned char *golden)
 	 * the MSE and then the PSNR.									 */
 	for (i=1; i<SIZE-1; i++) {
 		for ( j=1; j<SIZE-1; j++ ) {
-			t = pow((output[i*SIZE+j] - golden[i*SIZE+j]),2);
+			t = pow((output[look[j][i]] - golden[look[j][i]]),2);
 			PSNR += t;
 		}
 	}
